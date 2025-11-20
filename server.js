@@ -17,7 +17,7 @@ app.get('/api/:date?', (req, res) => {
     return res.json({ error: "Invalid Date" });
   }
 
-  res.json({
+  return res.json({
     unix: date.getTime(),
     utc: date.toUTCString()
   });

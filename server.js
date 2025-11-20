@@ -1,14 +1,8 @@
-const express = require('express');
-const cors = require('cors');
-
-const app = express();
-app.use(cors({ optionsSuccessStatus: 200 }));
-
 app.get('/api/:date?', (req, res) => {
   const dateParam = req.params.date;
 
   let date;
-  if (dateParam === undefined || dateParam.trim() === "") {
+  if (!dateParam) {
     // Caso vacío → fecha actual
     date = new Date();
   } else if (!isNaN(dateParam)) {
@@ -28,6 +22,3 @@ app.get('/api/:date?', (req, res) => {
     utc: date.toUTCString()
   });
 });
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT);

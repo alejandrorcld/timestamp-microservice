@@ -7,16 +7,16 @@ app.use(cors());
 app.get('/api/:date?', (req, res) => {
   const dateParam = req.params.date;
 
-  // Si no hay parámetro o está vacío → hora actual
-  if (!dateParam || dateParam.trim() === "") {
+  // Caso: parámetro vacío o indefinido → hora actual
+  if (dateParam === undefined || dateParam === "") {
     const now = new Date();
     return res.json({
       unix: now.getTime(),
-      utc: now.toUTCString()   // siempre en inglés
+      utc: now.toUTCString()
     });
   }
 
-  // Si es número → interpretar como UNIX ms
+  // Caso: número → interpretar como UNIX ms
   let parsed;
   if (/^\d+$/.test(dateParam)) {
     parsed = new Date(Number(dateParam));
@@ -31,7 +31,7 @@ app.get('/api/:date?', (req, res) => {
 
   res.json({
     unix: parsed.getTime(),
-    utc: parsed.toUTCString()   // formato correcto
+    utc: parsed.toUTCString()
   });
 });
 

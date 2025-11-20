@@ -13,8 +13,8 @@ app.get('/', (req, res) => {
 app.get('/api/:date?', (req, res) => {
   const dateParam = req.params.date;
 
-  // Si no hay parámetro → devolver hora actual
-  if (!dateParam) {
+  // Si no hay parámetro o está vacío → devolver hora actual
+  if (!dateParam || dateParam.trim() === "") {
     const now = new Date();
     return res.json({
       unix: now.getTime(),

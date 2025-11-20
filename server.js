@@ -1,22 +1,39 @@
-// api/index.js
-module.exports = (req, res) => {
-  const { date } = req.query; // Vercel usa query en lugar de params
+// server.js
+const express = require('express');
+const cors = require('cors');
 
-  let d;
-  if (!date) {
-    d = new Date(Date.now()); // calcula en el instante exacto
-  } else if (!isNaN(date)) {
-    d = new Date(parseInt(date, 10));
+const app = express();
+app.use(cors({ optionsSuccessStatus: 200 }));
+
+// Ruta para fecha actual
+app.get('/api', (req, res) => {
+  const now = Date.now();
+  res.json({
+    unix: now,
+    utc: new Date(now).toUTCString()
+  });
+});
+
+// Ruta para fecha con parámetro
+app.get('/api/:date', (req, res) => {
+  const dateParam = req.params.date;
+  let date;
+
+  if (!isNaN(dateParam)) {
+    date = new Date(parseInt(dateParam, 10));
   } else {
-    d = new Date(date);
+    date = new Date(dateParam);
   }
 
-  if (d.toString() === 'Invalid Date') {
+  if (date.toString() === 'Invalid Date') {
     return res.json({ error: 'Invalid Date' });
   }
 
   res.json({
-    unix: d.getTime(),
-    utc: d.toUTCString()
+    unix: date.getTime(),
+    utc: date.toUTCString()
   });
-};
+});
+
+// Exporta el handler para Vercel
+module.exports = app;

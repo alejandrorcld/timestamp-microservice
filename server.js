@@ -4,11 +4,15 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 
+// ÚNICA ruta: path param opcional y también query param
 app.get('/api/:date?', (req, res) => {
-  const dateParam = req.params.date;
+  const pathDate = req.params.date;           // /api/:date?
+  const queryDate = req.query.date;           // /api?date=
 
-  // Si no hay parámetro o está vacío → hora actual
-  if (!dateParam || dateParam.trim() === "") {
+  // Si no hay parámetro (path o query) o está vacío → hora actual
+  const emptyPath = !pathDate || pathDate.trim() === '';
+  const emptyQuery = typeof queryDate !== 'undefined' && String(queryDate).trim() === '';
+  if (emptyPath && (typeof queryDate === 'undefined' || emptyQuery)) {
     const now = new Date();
     return res.json({
       unix: now.getTime(),
@@ -16,17 +20,19 @@ app.get('/api/:date?', (req, res) => {
     });
   }
 
-  // Si es número → interpretar como UNIX ms
+  // Seleccionar fuente de fecha: prioridad al path; si no hay, usar query
+  const dateInput = emptyPath ? queryDate : pathDate;
+
+  // Parse: si solo dígitos → UNIX ms; si no, Date(string)
   let parsed;
-  if (/^\d+$/.test(dateParam)) {
-    parsed = new Date(Number(dateParam));
+  if (/^\d+$/.test(String(dateInput))) {
+    parsed = new Date(Number(dateInput));
   } else {
-    parsed = new Date(dateParam);
+    parsed = new Date(String(dateInput));
   }
 
-  // Validar fecha
-  if (parsed.toString() === "Invalid Date") {
-    return res.json({ error: "Invalid Date" });
+  if (parsed.toString() === 'Invalid Date') {
+    return res.json({ error: 'Invalid Date' });
   }
 
   res.json({

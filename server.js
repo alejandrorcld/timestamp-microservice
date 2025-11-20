@@ -2,13 +2,13 @@ const express = require('express');
 const cors = require('cors');
 
 const app = express();
-app.use(cors());
+app.use(cors({ optionsSuccessStatus: 200 }));
 
 app.get('/api/:date?', (req, res) => {
   const dateParam = req.params.date;
 
-  // Caso: parámetro vacío o indefinido → hora actual
-  if (dateParam === undefined || dateParam === "") {
+  // Si no hay parámetro o está vacío → hora actual
+  if (!dateParam || dateParam.trim() === "") {
     const now = new Date();
     return res.json({
       unix: now.getTime(),
@@ -16,7 +16,7 @@ app.get('/api/:date?', (req, res) => {
     });
   }
 
-  // Caso: número → interpretar como UNIX ms
+  // Si es número → interpretar como UNIX ms
   let parsed;
   if (/^\d+$/.test(dateParam)) {
     parsed = new Date(Number(dateParam));

@@ -3,7 +3,7 @@ const cors = require('cors');
 
 const app = express();
 
-// Desactiva ETag y fuerza no-cache para evitar respuestas antiguas
+// Desactiva ETag y cache
 app.set('etag', false);
 app.use(cors({ optionsSuccessStatus: 200 }));
 app.use((req, res, next) => {
@@ -18,16 +18,14 @@ app.use((req, res, next) => {
 
 app.get('/api/:date?', (req, res) => {
   const dateParam = req.params.date;
-
   let date;
+
   if (!dateParam) {
-    // Calcula SIEMPRE en el momento del request
-    date = new Date(Date.now());
+    // Fecha actual calculada en el momento exacto del request
+    date = new Date();
   } else if (!isNaN(dateParam)) {
-    // Numérico (timestamp en ms)
     date = new Date(parseInt(dateParam, 10));
   } else {
-    // String (fecha ISO)
     date = new Date(dateParam);
   }
 

@@ -9,11 +9,20 @@ app.get('/', (req, res) => {
   res.send('Timestamp Microservice. Try /api or /api/:date');
 });
 
-// Ruta principal con parámetro opcional
-app.get('/api/:date?', (req, res) => {
+// Ruta /api → devuelve la hora actual
+app.get('/api', (req, res) => {
+  const now = new Date();
+  res.json({
+    unix: now.getTime(),
+    utc: now.toUTCString()
+  });
+});
+
+// Ruta /api/:date → maneja parámetros
+app.get('/api/:date', (req, res) => {
   const dateParam = req.params.date;
 
-  // Si no hay parámetro o está vacío → devolver hora actual
+  // Si el parámetro está vacío → hora actual
   if (!dateParam || dateParam.trim() === "") {
     const now = new Date();
     return res.json({
